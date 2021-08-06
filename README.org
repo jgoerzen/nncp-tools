@@ -4,7 +4,7 @@ Here you can find tools and documentation for [[https://nncp.mirrors.quux.org/][
 
 * Included Documentation
 
-- [[file:quux.org][Using the quux.org public NNCP relay]]
+- [[file:docs/quux.org][Using the quux.org public NNCP relay]]
 
 * Copyright
 

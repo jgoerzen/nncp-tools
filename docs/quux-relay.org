@@ -113,11 +113,11 @@ To that end, every peer on this relay is mentioned in the nodelist.
 Download the latest nodelist with:
 
 #+begin_example
-nncp-freq quux:nodelist.zip
+nncp-freq quux:nodelist.tar.gz
 #+end_example
 
 
-Upon unpacking, you will find a directory with nncp.hjson fragments corresponding to the nodes in the system.
+Upon unpacking, you will find a directory called =nodelist/for-use= with nncp.hjson fragments corresponding to the nodes in the system.
 
 You can use a script such as this to emit a more cohesive nncp.hjson blub:
 
@@ -161,13 +161,17 @@ Treat quux and your fellow humans kindly.
 
 quux does not have visibility into the packets that traverse the node, but nevertheless, if we become aware of harassment, unethical behavior, excessive storage use, or illegal activities using the quux node, appropriate action will be taken.
 
-We ask at this time that you please do not cause more than 1GB to be stored on quux, and would prefer that you keep your quux-transit packets smaller than that if at all possible.  quux is hosted on enterprise SSDs which can't handle multi-TB packets!
+We ask at this time that you keep routine packet sizes beneath 100MB.  Please do not in any circumstances cause more than 1GB to be stored on quux.  quux is hosted on enterprise SSDs which can't handle multi-TB packets!
+
+quux implements an automatic cleanup of packets that have remained on the system for a certain number of days without being picked up.
 
 * Privacy
 
-Your data is end-to-end encrypted and quux has no visibility into it.
+Your data is as private as NNCP makes it, which is pretty good.  NNCP's encryption should prevent quux from seeing your data.  Some metadata about packet sizes and flow may be visible to quux.  For more details, consult the NNCP documentation.
 
 Submitted data, including your name, email address, public host keys, and hostname/port, will be made available to all other present or future members of this relay server and may be published elsewhere on the Internet from time to time.
+
+Always remember the experimental nature of quux and that any kind of guarantee cannot be provided.
 
 * Removal
 

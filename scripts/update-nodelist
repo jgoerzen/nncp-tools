@@ -2,7 +2,7 @@
 
 usage () {
     cat <<EOF
-Usage: nupdate-nodelist nodename path-to-for-use hjson-pre hjson-post [ignore_pat] [pat_vianodes]
+Usage: update-nodelist nodename path-to-for-use hjson-pre hjson-post [ignore_pat] [pat_vianodes]
 
 This script writes out a nncp.hjson on stdout and needs these parameters:
 
@@ -35,8 +35,14 @@ NODENAME="$1"
 FORUSE_PATH="$2"
 HJSON_PRE="$3"
 HJSON_POST="$4"
-IGNORE_PAT="$5"
-PAT_VIANODES="$6"
+IGNORE_PAT="${5:-}"
+PAT_VIANODES="${6:-}"
+
+defaultvia () {
+    if [ "$1" != "quux" ]; then
+	echo 'via: ["quux"]'
+    fi
+}
 
 if [ -z "$NODENAME" ]; then
     usage
@@ -53,16 +59,19 @@ fi
 
 cat "$HJSON_PRE"
 pushd "$FORUSE_PATH" &> /dev/null
-rm "$NODENAME"
+rm -f "$NODENAME"
 for FILE in *; do
+    echo ""
+    echo "##### NODE $FILE"
+    echo ""
     echo "$FILE: {"
     cat "$FILE"
     if [ -z "$IGNORE_PAT"  ]; then
         # No IGNORE_PAT given; just write the default via.
-        echo 'via: ["quux"]'
-    elif echo "$NODENAME" | grep -E -v "$IGNORE_PAT"; then
+	defaultvia "$FILE"
+    elif echo "$FILE" | grep -q -E -v "$IGNORE_PAT"; then
         # IGNORE_PAT given and we don't match it
-        echo 'via: ["quux"]'
+	defaultvia "$FILE"
     elif [ -n "$PAT_VIANODES" ]; then
         # We do match IGNORE_PAT and we have PAT_VIANODES
         echo "via: [$PAT_VIANODES]"

@@ -19,8 +19,8 @@ EOF
 
 set -euo pipefail
 
-XFERDIR="$1"
-POLLNODE="$2"
+XFERDIR="${1:-}"
+POLLNODE="${2:-}"
 
 if [ ! -d "$XFERDIR" ]; then
     usage
@@ -30,7 +30,7 @@ nncp-toss -seen
 nncp-xfer "$XFERDIR"
 nncp-toss -seen
 if [ -n "$POLLNODE" ]; then
-    nncp-call -autotoss -autotoss-seen "$POLLNODE"
+    nncp-call -autotoss "$POLLNODE"
 fi
 nncp-toss -seen
 nncp-xfer "$XFERDIR"

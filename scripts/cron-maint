@@ -18,7 +18,7 @@ EOF
 set -euo pipefail
 
 SPOOLDIR="$1"
-XFERDIR="$2"
+XFERDIR="${2:-}"
 
 if [ ! -d "$SPOOLDIR" ]; then
     usage

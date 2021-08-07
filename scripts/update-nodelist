@@ -2,7 +2,7 @@
 
 usage () {
     cat <<EOF
-Usage: nupdate-nodelist nodename path-to-for-use hjson-pre hjson-post [ignore_pat] [pat_vianode]
+Usage: nupdate-nodelist nodename path-to-for-use hjson-pre hjson-post [ignore_pat] [pat_vianodes]
 
 This script writes out a nncp.hjson on stdout and needs these parameters:
 
@@ -23,8 +23,8 @@ ignore_pat, optional, is a pattern matched against the filename
 with egrep -v that gives nodes to ignore when writing the default
 quux via lines; it indicates locally-connected machines
 
-pat_vianode, optional, is a replacement via: node to insert when
-ignore_pat matches.
+pat_vianodes, optional, is a replacement via: node(s) to insert when
+ignore_pat matches.  Example:  "foo", "bar"
 EOF
     exit 10
 }
@@ -36,7 +36,7 @@ FORUSE_PATH="$2"
 HJSON_PRE="$3"
 HJSON_POST="$4"
 IGNORE_PAT="$5"
-PAT_VIANODE="$6"
+PAT_VIANODES="$6"
 
 if [ -z "$NODENAME" ]; then
     usage
@@ -63,9 +63,9 @@ for FILE in *; do
     elif echo "$NODENAME" | grep -E -v "$IGNORE_PAT"; then
         # IGNORE_PAT given and we don't match it
         echo 'via: ["quux"]'
-    elif [ -n "$PAT_VIANODE" ]; then
-        # We do match IGNORE_PAT and we have a PAT_VIANODE
-        echo "via: [\"$PAT_VIANODE\"]"
+    elif [ -n "$PAT_VIANODES" ]; then
+        # We do match IGNORE_PAT and we have PAT_VIANODES
+        echo "via: [$PAT_VIANODES]"
     fi
     echo '}'
 done

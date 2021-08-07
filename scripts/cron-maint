@@ -2,13 +2,13 @@
 
 usage () {
     cat <<EOF
-Usage: cron-maint xferdir spooldir
+Usage: cron-maint spooldir [xferdir]
 
 Where:
 
-xferdir is the path to the nncp-xfer exchange directory
-
 spooldir is the path to the NNCP spool directory
+
+xferdir is the path to the nncp-xfer exchange directory
 
 Set NNCPCFG if needed.
 EOF
@@ -17,16 +17,15 @@ EOF
 
 set -euo pipefail
 
-XFERDIR="$1"
-SPOOLDIR="$2"
+SPOOLDIR="$1"
+XFERDIR="$2"
 
-if [ ! -d "$XFERDIR" ]; then
-    usage
-fi
 if [ ! -d "$SPOOLDIR" ]; then
     usage
 fi
 
 find "$SPOOLDIR" -regex '.*/rx/.*' -a -type f -a -mtime +4 -delete
 find "$SPOOLDIR" -regex '.*/tx/.*' -a -type f -a mtime +10 -delete
-find "$XFERDIR" -type f -a mtime +10 -delete
+if [ -n "$XFERDIR" ]; then
+    find "$XFERDIR" -type f -a mtime +10 -delete
+fi

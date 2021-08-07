@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+~/nncp-tools/scripts/update-nodelist-sdfrelay
+
+(sleep 5; ~/nncp-tools/scripts/restart-sdf-relay) &

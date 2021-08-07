@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+~/nncp/bin/nncp-daemon -bind "[::]:10036" -quiet &
+~/nncp/bin/nncp-caller -quiet &
+~/nncp/bin/nncp-toss -quiet -cycle 30 &

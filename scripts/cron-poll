@@ -1,3 +1,33 @@
 #!/usr/bin/env bash
 
+usage () {
+    cat <<EOF
+Usage: cron-poll xferdir [pollnode]
+
+Where:
+
+xferdir is the path to the nncp-xfer exchange directory
+
+pollhost is the optional node that we will poll for external traffic.
+EOF
+    exit 10
+}
+
 set -euo pipefail
+
+XFERDIR="$1"
+POLLNODE="$2"
+
+if [ ! -d "$XFERDIR" ]; then
+    usage
+fi
+
+nncp-toss -seen
+nncp-xfer "$XFERDIR"
+nncp-toss -seen
+if [ -n "$POLLNODE" ]; then
+    nncp-call -autotoss -autotoss-seen "$POLLNODE"
+fi
+nncp-toss -seen
+nncp-xfer "$XFERDIR"
+nncp-toss -seen

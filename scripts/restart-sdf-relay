@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+~/nncp-tools/scripts/stop-sdf-relay
+sleep 5
+~/nncp-tools/scripts/start-sdf-relay

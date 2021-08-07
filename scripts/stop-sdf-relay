@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+killall --user jgoerzen nncp-daemon nncp-caller nncp-toss &> /dev/null || true

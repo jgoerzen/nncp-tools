@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# THIS SCRIPT IS UNTESTED.
+
 usage () {
     cat <<EOF
 Usage: cron-poll xferdir [pollnode]
@@ -9,6 +11,8 @@ Where:
 xferdir is the path to the nncp-xfer exchange directory
 
 pollhost is the optional node that we will poll for external traffic.
+
+Set NNCPCFG if needed.
 EOF
     exit 10
 }

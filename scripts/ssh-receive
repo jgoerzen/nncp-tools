@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+nncp-toss -quiet > /dev/null
+nncp-daemon -autotoss -quiet -ucspi
+nncp-toss -quiet > /dev/null
+nncp-call -quiet quux > /dev/null

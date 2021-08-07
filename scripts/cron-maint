@@ -10,6 +10,7 @@ xferdir is the path to the nncp-xfer exchange directory
 
 spooldir is the path to the NNCP spool directory
 
+Set NNCPCFG if needed.
 EOF
     exit 10
 }

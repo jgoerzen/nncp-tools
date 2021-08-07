@@ -3,8 +3,11 @@
 # This script is designed to be run by nncp-exec, accepting a tarball nodelist
 # on stdin and updating it as appropriate.
 #
+# Pass this node's name as $1
 
 set -euo pipefail
+
+NODENAME="$1"
 
 TMPDIR="`mktemp -d`"
 trap 'ECODE=$?; rm -r "$TMPDIR"; exit $ECODE' EXIT INT TERM
@@ -15,15 +18,6 @@ tar -zxf -
 
 cd nodelist/for-use
 
-# Remove the ability of any but our SDF peers and quux to communicate here.
+# Everything outbound from here goes via the SDF relay.
 
-for FILE in *; do
-    if [ "$FILE" = "quux" ] || echo "$FILE" | grep -q '\.sdf\.org$'; then
-        # don't mess with this
-        true
-    else
-        sed -i 's/noisepub:.*//' "$FILE"
-    fi
-done
-
-~/nncp-tools/scripts/update-nodelist relay.sdf.org "`pwd`" ~/nncp/etc/nncp.hjson.pre ~/nncp/etc/nncp.hjson.post '\.sdf\.org$' > ~/nncp/etc/nncp.hjson
+~/nncp-tools/scripts/update-nodelist "$NODENAME" "`pwd`" ~/nncp/etc/nncp.hjson.pre ~/nncp/etc/nncp.hjson.post '.*' '"relay.sdf.org"' > ~/nncp/etc/nncp.hjson

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# This cript writes out a nncp.hjson on stdout and needs these parameters:
+#
+# nupdate-nodelist nodename path-to-for-use hjson-pre hjson-post [ignore_pat]
+#
+# Where:
+#
+# nodename is the name of the local NNCP node
+#
+# path-to-for-use points to the for-use directory from a quux nodelist
+# tarball
+#
+# hjson-pre is the path to the fragment of the hjson to use before the
+# inserted nodes
+#
+# hjson-post is the path to the fragment of the hjson to use after the
+# inserted nodes.
+#
+# ignore_pat, optional, is a pattern to ignore with egrep -v when writing
+# via lines; it indicates locally-connected machines
+
+set -eou pipefail
+
+NODENAME="$1"
+FORUSE_PATH="$2"
+HJSON_PRE="$3"
+HJSON_POST="$4"
+IGNORE_PAT="$5"
+
+usage () {
+    echo "Usage: $0 nodename foruse-path hjson-pre hjson-post [ignore_pat]"
+    exit 10
+}
+
+if [ -z "$NODENAME" ]; then
+    usage
+fi
+if [ ! -d "$FORUSE_PATH" ]; then
+    usage
+fi
+if [ ! -f "$HJSON_PRE" ]; then
+    usage
+fi
+if [ ! -f "$HJSON_POST" ]; then
+    usage
+fi
+
+cat "$HJSON_PRE"
+pushd "$FORUSE_PATH" &> /dev/null
+rm "$NODENAME"
+for FILE in *; do
+    echo "$FILE: {"
+    cat "$FILE"
+    echo 'via: ["quux"]'
+    echo '}'
+done
+
+popd &> /dev/null
+cat "$HJSON_POST"

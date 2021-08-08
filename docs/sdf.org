@@ -10,6 +10,6 @@ The NNCP homepage is <http://www.nncpgo.org>.  A mirror using TLS and Let's Encr
 
 [[https://sdf.org/][SDF]] is a public-access Unix system that has been around since 1987.  SDF offers free or very low-cost accounts to the general public on NetBSD and Linux systems.  There is a community built up around this at SDF.
 
-* Why this relay?
+* Why NNCP?
 
 This

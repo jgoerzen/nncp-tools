@@ -17,7 +17,7 @@ EOF
 
 set -euo pipefail
 
-SPOOLDIR="$1"
+SPOOLDIR="${1:-}"
 XFERDIR="${2:-}"
 
 if [ ! -d "$SPOOLDIR" ]; then
@@ -25,7 +25,7 @@ if [ ! -d "$SPOOLDIR" ]; then
 fi
 
 find "$SPOOLDIR" -regex '.*/rx/.*' -a -type f -a -mtime +4 -delete
-find "$SPOOLDIR" -regex '.*/tx/.*' -a -type f -a mtime +10 -delete
+find "$SPOOLDIR" -regex '.*/tx/.*' -a -type f -a -mtime +10 -delete
 if [ -n "$XFERDIR" ]; then
     find "$XFERDIR" -type f -a mtime +10 -delete
 fi

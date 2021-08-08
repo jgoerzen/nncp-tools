@@ -34,7 +34,7 @@ for FILE in *; do
         # don't mess with this
         true
     else
-        sed -i 's/noisepub:.*//' "$FILE"
+        true # disabled for now sed -i 's/noisepub:.*//' "$FILE"
     fi
 done
 

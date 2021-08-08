@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-~/nncp-tools/scripts/stop-sdf-relay
+~/nncp-tools/scripts/stop-sdfrelay
 sleep 5
-~/nncp-tools/scripts/start-sdf-relay
+~/nncp-tools/scripts/start-sdfrelay

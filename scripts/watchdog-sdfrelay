@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-if pgrep -u `id -nu` nncp-daemon && \
-    pgrep -u `id -nu` nncp-caller && \
-    pgrep -u `id -nu` nncp-toss; then
+if pgrep -u `id -nu` nncp-daemon > /dev/null && \
+    pgrep -u `id -nu` nncp-caller > /dev/null && \
+    pgrep -u `id -nu` nncp-toss > /dev/null; then
     # everything is up
     true
 else

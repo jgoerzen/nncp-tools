@@ -1,0 +1,9 @@
+/meta/j/jgoerzen/nncp/spool/log
+{
+       rotate 14
+       daily
+       missingok
+       notifempty
+       compress
+       delaycompress
+}

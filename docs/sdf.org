@@ -1,0 +1,15 @@
+#+TITLE: Using NNCP at SDF
+
+* Introduction to NNCP
+
+According to the [[https://nncp.mirrors.quux.org/][NNCP documentation]], NNCP is intended to help build up small size ad-hoc friend-to-friend (F2F) statically routed darknet delay-tolerant networks for fire-and-forget secure reliable files, file requests, Internet mail and commands transmission. All packets are integrity checked, end-to-end encrypted, explicitly authenticated by known participants public keys. Onion encryption is applied to relayed packets. Each node acts both as a client and server, can use push and poll behaviour model. Also there is multicasting area support.
+
+The NNCP homepage is <http://www.nncpgo.org>.  A mirror using TLS and Let's Encrypt is at <https://nncp.mirrors.quux.org>.
+
+* About SDF
+
+[[https://sdf.org/][SDF]] is a public-access Unix system that has been around since 1987.  SDF offers free or very low-cost accounts to the general public on NetBSD and Linux systems.  There is a community built up around this at SDF.
+
+* Why this relay?
+
+This

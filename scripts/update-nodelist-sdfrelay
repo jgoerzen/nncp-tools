@@ -15,6 +15,15 @@ tar -zxf -
 
 cd nodelist/for-use
 
+cat >> quux <<EOF
+calls: [
+  {
+   cron: "0 * * * * * *"
+   when-tx-exists: true
+  }
+
+]
+EOF
 # Remove the ability of any but our SDF peers and quux to communicate here.
 
 for FILE in *; do

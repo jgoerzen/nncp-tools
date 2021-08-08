@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if pgrep -u `id -nu` nncp-daemon && \
+    pgrep -u `id -nu` nncp-caller && \
+    pgrep -u `id -nu` nncp-toss; then
+    # everything is up
+    true
+else
+    ~/nncp-tools/scripts/restart-sdfrelay
+fi

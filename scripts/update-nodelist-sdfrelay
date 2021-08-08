@@ -21,7 +21,10 @@ calls: [
    cron: "0 * * * * * *"
    when-tx-exists: true
   }
+]
 
+exec: [
+  nodelistupdate: ["/meta/j/jgoerzen/nncp-tools/scripts/receive-nodelist-sdfrelay"]
 ]
 EOF
 # Remove the ability of any but our SDF peers and quux to communicate here.

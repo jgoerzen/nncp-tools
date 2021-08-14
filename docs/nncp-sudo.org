@@ -1,0 +1,41 @@
+#+TITLE: Using NNCP with sudo
+
+* Background
+
+Sometimes, the NNCP commands run as a different user than your day-to-day user.  Perhaps you would like to be able to use them with sudo, both for sending and receiving.  This document shows you how.  It doesn't actually need any nncp-tools code; it's pure documentation.
+
+* setting up sudoers
+
+In my case, I have a jgoerzen user for my main work, and a nncp user for nncp.  I created a =/etc/sudoers.d/local-nncp= file like this:
+
+#+begin_example
+jgoerzen ALL=(nncp) NOPASSWD: /usr/local/nncp/bin/nncp-*
+nncp ALL=(jgoerzen) NOPASSWD: /home/jgoerzen/bin/gitsync-recv
+#+end_example
+
+I have my NNCP programs installed in =/usr/local/nncp/bin=, so this lets jgoerzen run any of them without a password.
+
+Also, I use [[https://github.com/jgoerzen/gitsync-nncp][gitsync-nncp]], so I allow NNCP to send data to it.
+
+* Setting up aliases
+
+You could, of course, type =sudo -Hu nncp /usr/local/nncp/bin/nncp-stat= and similar (note that the full path is required here).  But that's a real pain.  Instead, just do this (assuming bash):
+
+#+begin_src bash
+for FILE in /usr/local/nncp/bin/*; do
+   BASENAME="`basename "$FILE"`"
+   alias "$BASENAME=sudo -Hu nncp $FILE"
+done
+#+end_src
+
+You can put that in your .bash_aliases or other .bashrc/.profile files as appropriate.
+
+* Receiving nncp-exec files
+
+In order to receive nncp-exec files, you'll use a line like this in your nncp.hjson exec clause:
+
+#+begin_example
+     repo1: ["sudo", "-Hu", "jgoerzen", "/home/jgoerzen/bin/gitsync-recv", "/home/jgoerzen/repo1"]
+#+end_example
+
+That's all there is to it!

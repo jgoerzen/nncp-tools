@@ -21,8 +21,11 @@ calls: [
    cron: "0 * * * * * *"
    when-tx-exists: true
   }
-
 ]
+
+exec: {
+  nodelistupdate: ["/meta/j/jgoerzen/nncp-tools/scripts/receive-nodelist-sdfrelay"]
+}
 EOF
 # Remove the ability of any but our SDF peers and quux to communicate here.
 
@@ -31,7 +34,7 @@ for FILE in *; do
         # don't mess with this
         true
     else
-        sed -i 's/noisepub:.*//' "$FILE"
+        true # disabled for now sed -i 's/noisepub:.*//' "$FILE"
     fi
 done
 

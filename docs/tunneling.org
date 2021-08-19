@@ -1,0 +1,13 @@
+#+TITLE: Tunneling NNCP over other transports
+
+* Background
+
+NNCP has built-in support for running over TCP, with nncp-daemon and nncp-call/caller.  NNCP's own [[https://nncp.mirrors.quux.org/Use-cases.html][use cases]] page talks about various use cases for NNCP.  Some of them, such as the [[https://nncp.mirrors.quux.org/UsecaseNoLink.html][no link]] page, cover use of nncp-xfer; others, such as the [[https://nncp.mirrors.quux.org/UsecaseBroadcast.html][one-way broadcasting]] page go over nncp-bundle.
+
+Here I build on all of these tools (daemon, call, xfer, and bundle) to show how they can be used to build even more communication methods.
+
+* The tools
+
+The [[https://nncp.mirrors.quux.org/Commands.html][NNCP commands]] we'll be using are:
+
+- nncp-daemon :: Normally listens on a TCP port, but can also interact over stdin/stdout.  We can use this, for instance, over ssh.

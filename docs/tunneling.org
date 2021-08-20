@@ -52,6 +52,14 @@ addrs: {
 
 This particular example comes from the [[file:quux-relay.org][quux relay]] documentation.  Assuming your local Tor is listening on port 9050, it connects to the given hidden service on port 5400.
 
+*** socat
+
+socat is a very interesting multi-tool that can pipe data from commands to/from things like sockets, SSL, proxies, UDP, and so forth.  It can be used with nncp-call and nncp-daemon.
+
+*** Radios
+
+My [[https://github.com/jgoerzen/lorapipe][lorapipe]] and [[https://github.com/jgoerzen/xbnet][xbnet]] projects both facilitate sending data over long-distance, low-bandwidth radios.  The [[https://github.com/jgoerzen/xbnet/blob/master/doc/xbnet.1.md][xbnet documentation]], in particular, covers use of socat with radios, as well as UUCP and PPP.
+
 ** Based on nncp-xfer
 
 [[https://nncp.mirrors.quux.org/nncp_002dxfer.html][nncp-xfer]] copies packets to/from a directory tree.  These commands are most useful for things that can be mounted (including FUSE mounting).

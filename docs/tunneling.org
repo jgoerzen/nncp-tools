@@ -84,6 +84,10 @@ These options aim to keep a local directory in sync with a remote.  They are a b
 
 [[https://nncp.mirrors.quux.org/nncp_002dbundle.html][nncp-bundle]] emits a tar-style stream which can be piped across transports, stored in queue directories or services, etc.  Small bundles could conceivably be encoded and sent by email even (with procmail recipes to decode and process on the receiving end).  nncp-bundle is suitable for use with tape drives, other streaming transport, or anything that you can pipe to.
 
+*** PPP
+
+NNCP's [[https://nncp.mirrors.quux.org/PPP.html][PPP]] page covers basic setup of running an IP stack over a serial line.
+
 *** uucp
 
 Perhaps you have a noisy serial line or something else that is a challenge to keep clean.  UUCP could still run over it -- yes, you can tunnel NNCP over UUCP!  All you need to do is use uux.  Something like this (untested) ought to do the trick:

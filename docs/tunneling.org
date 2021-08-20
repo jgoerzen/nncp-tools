@@ -64,7 +64,7 @@ There are various FUSE mountable tools for these different types of storages.  O
 
 Using rclone in its syncing mode may be considerably more complicated, since it is a unidirectional sync.
 
-Additional packages to investigate include: sshfs, davfs2, s3fs
+Additional packages to investigate include: sshfs, davfs2, s3fs, curlftpfs
 
 *** Bi-directional Syncing Storage (Dropbox, Nextcloud, Owncloud, Syncthing, etc)
 

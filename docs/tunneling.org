@@ -11,3 +11,89 @@ Here I build on all of these tools (daemon, call, xfer, and bundle) to show how 
 The [[https://nncp.mirrors.quux.org/Commands.html][NNCP commands]] we'll be using are:
 
 - nncp-daemon :: Normally listens on a TCP port, but can also interact over stdin/stdout.  We can use this, for instance, over ssh.
+
+- nncp-call / nncp-caller :: Normally connects to a nncp-daemon on a TCP port, but can also use a program that can interact on stdin/stdout.
+
+- nncp-xfer :: Reads and writes from a filesystem tree.  Often used with USB sticks, but can also be used with various kinds of mountable/syncable directories and cloud storages.
+
+- nncp-bundle :: Reads and writes streaming, tar-type archives.  These need only a unidirectional pipe and can run over all sorts of transports, from FTP to UUCP.
+
+* The transports
+
+Here are some things that can act as transports for NNCP.
+
+** Based on nncp-daemon/call
+
+*** ssh
+
+You can easily tunnel the nncp-daemon/call traffic over ssh.  For instance, you could use this in the [[https://nncp.mirrors.quux.org/CfgNeigh.html][addrs]] part of the neighbor configuration:
+
+#+begin_example
+addrs: {
+  ssh: "|ssh remote.host nncp-daemon -ucspi"
+}
+#+end_example
+
+This recipe is, in fact, even in the addrs documentation for NNCP.  It of course requires configuration of public keys and authorized_hosts files.  Now, you can use nncp-call/caller like usual.
+
+*** sudo
+
+You can talk between two NNCP instances on the same box, but running as different users, over sudo.  See [[file:nncp-sudo.org][my NNCP-sudo]] documentation for details.
+
+*** Tor
+
+[[https://www.torproject.org/][Tor]] is known for its efforts to preserve anonymity.  It also makes it easy to run a server without having to muck with firewalls; that's called a "hidden service".  You could establish a hidden service that connects to nncp-daemon, then use the Tor SOCKS proxy to access it.  Your addrs section might look like this:
+
+#+begin_example
+addrs: {
+  tor: "|nc -X 5 -x 127.0.0.1:9050 akii45bolkchh5ulheaqip7amvy53ctt3crihzgzn3dgsk4jzj6ofuad.onion 5400"
+}
+#+end_example
+
+This particular example comes from the [[file:quux-relay.org][quux relay]] documentation.  Assuming your local Tor is listening on port 9050, it connects to the given hidden service on port 5400.
+
+** Based on nncp-xfer
+
+[[https://nncp.mirrors.quux.org/nncp_002dxfer.html][nncp-xfer]] copies packets to/from a directory tree.  These commands are most useful for things that can be mounted (including FUSE mounting).
+
+*** Cloud Storage (AWS S3, WebDAV, Nextcloud, Owncloud, SFTP, FTP, etc)
+
+There are various FUSE mountable tools for these different types of storages.  One in particular is [[https://rclone.org/][rclone]], which has an extensive list of storage backends.  If you can mount it in some way, you can likely use it as a relay point for nncp-xfer.
+
+=nncp-xfer -mkdir= will create any needed directories in a hierarchy.  That may be all you need to routinely do.
+
+Using rclone in its syncing mode may be considerably more complicated, since it is a unidirectional sync.
+
+Additional packages to investigate include: sshfs, davfs2, s3fs
+
+*** Bi-directional Syncing Storage (Dropbox, Nextcloud, Owncloud, Syncthing, etc)
+
+These options aim to keep a local directory in sync with a remote.  They are a bidirectional sync, so should work well with nncp-xfer.  Basically, nncp-xfer on a given machine can move packets to/from the shared hierarchy as appropriate, but won't touch files that aren't relevant to it, so the process should be quite safe.
+
+[[https://syncthing.net/][Syncthing]], in particular, could make a great match for NNCP.  Since it is fully-distributed, serverless, and even runs on phones, it can be an interesting transport mechanism.  I have a [[https://changelog.complete.org/archives/10219-a-simple-delay-tolerant-offline-capable-mesh-network-with-syncthing-optional-nncp][blog article]] about using Syncthing with NNCP.
+
+** Based on nncp-bundle
+
+[[https://nncp.mirrors.quux.org/nncp_002dbundle.html][nncp-bundle]] emits a tar-style stream which can be piped across transports, stored in queue directories or services, etc.  Small bundles could conceivably be encoded and sent by email even (with procmail recipes to decode and process on the receiving end).  nncp-bundle is suitable for use with tape drives, other streaming transport, or anything that you can pipe to.
+
+*** uucp
+
+Perhaps you have a noisy serial line or something else that is a challenge to keep clean.  UUCP could still run over it -- yes, you can tunnel NNCP over UUCP!  All you need to do is use uux.  Something like this (untested) ought to do the trick:
+
+#+begin_example
+nncp-bundle -tx -delete node2 | uux - 'node2!nncp-bundle' -rx -check
+#+end_example
+
+You can omit the =-delete= until you have tested this and found it to be working well.
+
+*** ZModem
+
+Of course, nncp bundles are just files that can be sent across all sorts of links using ZModem or similar.
+
+*** IPFS, DAT, and other distributed tools
+
+Since a bundle is just a file, it could be distributed using IPFS or something similar.  However, I haven't had the time to thoroughly explore this option.
+
+* Even More!
+
+NNCP's [[https://nncp.mirrors.quux.org/Use-cases.html][Use Cases]] page has even more ideas!

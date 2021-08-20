@@ -2,9 +2,16 @@
 
 * Background
 
+We're going to cover two different sudo situations:
+
+1. Running NNCP commands for an NNCP installation that runs as a different user
+2. Using sudo to facilitate communications between two different NNCP installations on a system, running as different users
+
+* Interacting with NNCP that's running as a different user
+
 Sometimes, the NNCP commands run as a different user than your day-to-day user.  Perhaps you would like to be able to use them with sudo, both for sending and receiving.  This document shows you how.  It doesn't actually need any nncp-tools code; it's pure documentation.
 
-* setting up sudoers
+** setting up sudoers
 
 In my case, I have a jgoerzen user for my main work, and a nncp user for nncp.  I created a =/etc/sudoers.d/local-nncp= file like this:
 
@@ -17,7 +24,7 @@ I have my NNCP programs installed in =/usr/local/nncp/bin=, so this lets jgoerze
 
 Also, I use [[https://github.com/jgoerzen/gitsync-nncp][gitsync-nncp]], so I allow NNCP to send data to it.
 
-* Setting up aliases
+** Setting up aliases
 
 You could, of course, type =sudo -Hu nncp /usr/local/nncp/bin/nncp-stat= and similar (note that the full path is required here).  But that's a real pain.  Instead, just do this (assuming bash):
 
@@ -30,7 +37,7 @@ done
 
 You can put that in your .bash_aliases or other .bashrc/.profile files as appropriate.
 
-* Receiving nncp-exec files
+** Receiving nncp-exec files
 
 In order to receive nncp-exec files, you'll use a line like this in your nncp.hjson exec clause:
 
@@ -39,3 +46,21 @@ In order to receive nncp-exec files, you'll use a line like this in your nncp.hj
 #+end_example
 
 That's all there is to it!
+
+* Facilitating communications between two installations
+
+In my [[file:tunneling.org][NNCP tunneling]] documentation, I talk about running NNCP over ssh.  A very similar approach can be taken with sudo.  For instance, if you have user1 and user2 on a system, each with separate NNCP installations with their own spools, you can let them talk to each other via sudo.  One of them will need an [[https://nncp.mirrors.quux.org/CfgNeigh.html][addrs]] section like this:
+
+#+begin_example
+addrs: {
+  sudo: "|sudo -Hu otheruser /usr/local/nncp/bin/nncp-daemon -ucspi"
+}
+#+end_example
+
+And your sudoers would look like:
+
+#+begin_example
+firstuser ALL=(otheruser) NOPASSWD: /usr/local/nncp/bin/nncp-daemon
+#+end_example
+
+There you have it - instant communication!

@@ -137,6 +137,12 @@ That's it.  You're done configuring NNCP!
 
 * Getting started with INN
 
+For the purposes of easy conversation, this document will cover INN 2.6.4 as distributed in Debian 11 (bullseye).  Path names will differ on other systems, but the concepts should be the same.
+
+This document is not a substitute for the [[https://www.eyrie.org/~eagle/software/inn/][proper INN documentation]].  In particular, consult the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/install.html][INSTALL]] file, the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/checklist.html][checklist]], and the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/][documentation for each config file and program]].  I am going to highlight some steps, but this is /not/ a comprehensive INN installation document!
+
+First, install INN: =apt-get install inn2 inn2-inews=.  (the inn2-inews package includes rnews)
+
 * Copyright
 
 These files are Copyright (c) 2021 John Goerzen.

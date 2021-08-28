@@ -21,6 +21,47 @@ Since the tools that operate Usenet come from an era in which even a Raspberry P
 
 This document is primarily intended to let you operate as a leaf node for news.quux.org, the Usenet transit server operated principally by [[https://www.complete.org/JohnGoerzen][John Goerzen]].  news.quux.org has numerous peers across the globe with which it exchanges Usenet articles, and is able to offer you a full (basically every non-binary newsgroup) or partial (the newsgroups you select) feed.
 
+Secondary intents are to:
+
+- Demonstrate how to integrate INN with NNCP
+- Explain how you might operate a standalone (not connected with the global Usenet) INN network using NNCP.  This scenario is actually simpler than participating in the public Usenet, so much of what is said here may not apply to you.
+
+* What can you do with a NNCP Usenet feed from quux?
+
+Here are some examples:
+
+- Set up a personal news server for your own use, which you can use to read and post articles, search through, etc.
+- Set up a news server for yourself, friends, and family
+- Receive content from quux and further restribute it to your friends (establishing your own peers is up to you, and doesn't require any involvement from quux)
+  - You can also do the reverse; feed posts your friends send you via NNCP to quux and thus to the global Usenet.
+
+* Prerequisites
+
+Before continuing, you must already:
+
+- Be familiar with and operating [[https://nncp.mirrors.quux.org/][NNCP]]
+- Have a working understanding of Usenet.
+- Be comfortable with the Linux/BSD/Unix command line.
+
+If you are not already familiar with Usenet, it would probably be a good idea to dive in!
+
+Start with a newsreader program.  [[https://www.thunderbird.net/en-US/][Mozilla Thunderbird]] or [[http://pan.rebelbase.com/][PAN]] may be good places to start.  (For Thunderbird, add a new "other" account, for Usenet/newsgroup access).  You can get a free Usenet account from [[http://news.aioe.org/][AIOE]] or [[https://www.eternal-september.org/][Eternal September]] to use with it.  Don't skip this step!
+
+** Requirements for an NNCP feed from news.quux.org
+
+Because news.quux.org is capable of feeding your Usenet posts to thousands of Usenet servers across the globe, some additional requirements apply:
+
+- Your NNCP data will be exchanged using the [[file:quux-relay.org][quux.org public NNCP relay]].  So, you will need to establish yourself as an NNCP peer with it according to its [[file:quux-relay.org][documentation]].  (This is a quick and simple process.)
+
+- If you discontinue using the quux NNCP gateway -- and that's fine -- you need to let me know, so we don't build up an endless set of articles for a system that will never talk to us again.
+
+- news.quux.org is a well-connected transit system, and as such will send you articles from the public Internet.  While measures are taken to filter at quux, you must understand and agree that, like much of the public Internet, Usenet has no central authority and you may encounter content you find objectionable.  Content policing is up to each individual server operator in Usenet, which will now include YOU.  Be familiar with what's out there before, for instance, you offer it to children.
+
+- Similarly, it is your duty to not spread objectionable content to the Internet via quux.  Examples of objectionable content include that which is illegal, spam, abusive or exploitative, "doxxing", harassing, impersonating others with fake headers or the like, threatening or causing harm (including by spreading health misinformation), and so forth.  While there are corners of the global Usenet that have ugly behavior, and news.quux.org being fundamentally a dumb machine that just copies data from point A to B means that you may encounter this, there is a also an effort to make more parts of the Internet a positive environment, and quux.org is part of that effort.  https://floss.social/terms is an example of the kind of conduct we would like to see from articles you feed to us.  *We want to be part of the solution, not part of the problem.*
+  + If you provide access to others in any way, whether by letting them access your server or by becoming NNCP peers with them, you need to make sure they understand their responsibilities on what gets injected to the globe via you, and be prepared to enforce standards of behavior.  You may, for instance, need to cut them off of they engage in objectionable behavior via your system.  Keep this in mind.
+  + If persistent abuse occurs from your site which you are unable or unwilling to correct, or particularly egregious abuse occurs, your feed may be canceled.
+  + You must have up-to-date contact information on file with me at quux, so that you can be reached in the event complaints are received about your site at quux.  The idea is to resolve things collaboratively so that feed interruption need not occur -- but moreover, to prevent issues from occurring in the first place.
+  + Also this service is all-volunteer without guarantee of correct operation or the continuing operation of any feed.
 
 
 * Copyright

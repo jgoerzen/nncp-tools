@@ -137,7 +137,7 @@ Now, we need a script to act as a plug-in replacement for =uux=.  This is what I
 set -eo pipefail
 
 while [ -n "$1" ]; do
-    if echo "$1" | grep "!rnews"; then
+    if echo "$1" | grep -q "!rnews"; then
         HOST="$(echo "$1" | sed 's/!rnews//')"
         # This exec will terminate the script here
         exec nncp-exec -quiet "$HOST" rnews
@@ -169,7 +169,66 @@ This document is not a substitute for the [[https://www.eyrie.org/~eagle/softwar
 
 First, install INN: =apt-get install inn2 inn2-inews=.  (the inn2-inews package includes rnews)
 
-** newsgroups entry
+* Configuring INN for NNCP
+
+Remember, the INN configuration is in =/etc/news=.
+
+** send-uucp.cf
+
+We're going to set up INN's [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/send-uucp.html][send-uucp]] for our purposes.  This is what configures INN for sending outbound articles you write to quux.  Add a line for quux like this:
+
+#+begin_example
+news.quux.org          none      52428800
+#+end_example
+
+This defines that you will send to quux, without compression, with a maximum size of 50MB per batch.  We turn off compression here because NNCP has built-in compression that is better anyway, and running through two compressors just wastes CPU power.  send-uucp will start a new batch if any one batch exceeds 50MB in size.  A batch is one or more articles that are combined into a single nncp-exec invocation.
+
+** newsfeeds for quux
+
+Now, in =newsfeeds=, you need to add an entry for quux like so:
+
+#+begin_example
+news.quux.org\
+   :*,\
+   !*.bina*,!*.bain*,!*.dateien*,!*.pictures*,!junk/!local\
+   :Tf,Wnb,B4096/1024:
+#+end_example
+
+Here's a *very important note*: make sure there isn't a space at the end of that line.  If there is, it will take the space to be the name of the file it should create in =/var/spool/news/outgoing= and that will mess everything up.
+
+If you are taking only a subset of newsgroups, you will want to modify this accordingly to send only the desired messages to quux.
+
+** innshellvars.pl.local
+
+Next, we're going to tell INN to use our fake uux instead of UUCP's.  Add this to innshellvars.pl.local:
+
+#+begin_example
+$uux = '/usr/local/bin/nncp-uux';
+#+end_example
+
+Now, INN's Perl config system in =/usr/share/perl5/INN/Config.pm= won't actually use this file unless it's marked executable.  So:
+
+=chmod a+x innshellvars.pl.local=
+
+** Testing it out
+
+Now, make a test post somewhere.  Then let's see if we can generate outbound packets.
+
+First, become the news user: =su -s /bin/bash - news=.
+
+Then run =/usr/lib/news/bin/send-uucp=.  With any luck, =nncp-stat= should show an outbound packet generated!
+
+** Adding cron
+
+Now you can set up cron for send-uucp.  Something like this in /etc/cron.d/local-send-uucp will do the trick:
+
+#+begin_example
+PATH=/usr/lib/news/bin:/sbin:/bin:/usr/sbin:/usr/bin
+20,50 * * * *   news    /usr/lib/news/bin/send-uucp
+#+end_example
+
+
+** newsfeeds entry
 
 
 TODO: finish here

@@ -19,7 +19,7 @@ Since the tools that operate Usenet come from an era in which even a Raspberry P
 
 * Intent of this document
 
-This document is primarily intended to let you operate as a leaf node for news.quux.org, the Usenet transit server operated principally by [[https://www.complete.org/JohnGoerzen][John Goerzen]].  news.quux.org has numerous peers across the globe with which it exchanges Usenet articles, and is able to offer you a full (basically every non-binary newsgroup) or partial (the newsgroups you select) feed.
+This document is primarily intended to let you operate as a leaf node for news.quux.org, the Usenet transit server operated principally by [[https://www.complete.org/JohnGoerzen][John Goerzen]].  news.quux.org has several peers with which it exchanges Usenet articles, and is able to offer you a full (basically every non-binary newsgroup) or partial (the newsgroups you select) feed.
 
 Secondary intents are to:
 
@@ -55,14 +55,87 @@ Because news.quux.org is capable of feeding your Usenet posts to thousands of Us
 
 - If you discontinue using the quux NNCP gateway -- and that's fine -- you need to let me know, so we don't build up an endless set of articles for a system that will never talk to us again.
 
+- You must not operate an open or public relay.  Generally, that means "don't expose any ports on your Usenet server to the Internet."
+  - If you must expose the NNTP port to the Internet - which is discouraged in this situation - it must require authentication and you must not hand out accounts to the public.  As with an email service, operating a Usenet service that is open to the world would be ripe for abuse.  Those at AIOE and Eternal September have years of experience preventing that, and running a public relay from quux over NNCP is just going to be more pain than any of us have time to deal with.
+
 - news.quux.org is a well-connected transit system, and as such will send you articles from the public Internet.  While measures are taken to filter at quux, you must understand and agree that, like much of the public Internet, Usenet has no central authority and you may encounter content you find objectionable.  Content policing is up to each individual server operator in Usenet, which will now include YOU.  Be familiar with what's out there before, for instance, you offer it to children.
 
 - Similarly, it is your duty to not spread objectionable content to the Internet via quux.  Examples of objectionable content include that which is illegal, spam, abusive or exploitative, "doxxing", harassing, impersonating others with fake headers or the like, threatening or causing harm (including by spreading health misinformation), and so forth.  While there are corners of the global Usenet that have ugly behavior, and news.quux.org being fundamentally a dumb machine that just copies data from point A to B means that you may encounter this, there is a also an effort to make more parts of the Internet a positive environment, and quux.org is part of that effort.  https://floss.social/terms is an example of the kind of conduct we would like to see from articles you feed to us.  *We want to be part of the solution, not part of the problem.*
-  + If you provide access to others in any way, whether by letting them access your server or by becoming NNCP peers with them, you need to make sure they understand their responsibilities on what gets injected to the globe via you, and be prepared to enforce standards of behavior.  You may, for instance, need to cut them off of they engage in objectionable behavior via your system.  Keep this in mind.
+  + If you provide access to others in any way, whether by letting them access your server or by becoming NNCP peers with them, you need to make sure they understand their responsibilities on what gets injected to the globe via you, and be prepared to enforce standards of behavior.  You may, for instance, need to cut them off if they engage in objectionable behavior via your system.  Keep this in mind.
   + If persistent abuse occurs from your site which you are unable or unwilling to correct, or particularly egregious abuse occurs, your feed may be canceled.
   + You must have up-to-date contact information on file with me at quux, so that you can be reached in the event complaints are received about your site at quux.  The idea is to resolve things collaboratively so that feed interruption need not occur -- but moreover, to prevent issues from occurring in the first place.
   + Also this service is all-volunteer without guarantee of correct operation or the continuing operation of any feed.
 
+You should also be aware, in case you are planning to take your solar-powered Raspberry Pi with INN and NNCP with you on a 3-week hike across the remotest parts of Canada, writing articles to pass the time and posting them when you reach civilization, that most Usenet sites reject articles that reach them if they are older than a certain number of days.  For most, that number is 10, but it may be as little as 1 or 2 on some.  So if you are feeding data TO the Internet via quux, keep that in mind.  For data coming to YOU from quux, you can set the limit whatever you like (but the quux public relay may also auto-reap packets of advanced age that are bound to you).  So basically if you want to use this, checking in daily will probably work; weekly will probably usually work, and monthly will not.
+
+* The Big Picture: How it Works
+
+There are various Usenet servers; for this, we will use INN 2.6.
+
+INN still has UUCP support.  NNCP presents an interface that is almost identical to UUCP, so we will be generally configuring INN as if it's exchanging articles by UUCP.
+
+Here's how INN generally works in a UUCP/NNCP scenario:
+
+- Incoming articles from news.quux.org are fed from the tosser (nncp-toss / uuxqt) to a program called rnews, which is part of the INN distribution and injects them into the local server.
+- For articles you feed to quux, INN maintains a small file with information about them -- basically a "storage token" to find them on disk and a size.  From cron, send-uucp (also part of INN) goes through those INN files and generates batches of articles to be sent to quux's rnews via NNCP, using nncp-exec (our version of UUCP's uux).
+
+This is basically using a tried-and-true method that has worked with INN's UUCP support for decades.  All we are doing is substituting NNCP for the UUCP layer.  We are not using NNCP's multicast areas for this; see the conversation below about this.
+
+* Planning
+
+Before getting started, you need to think about a few things.
+
+** Your Usenet hostname
+
+The Usenet hostname you set is a vital part of preventing routing loops and duplicate messages on Usenet.  It does not have to be a valid Internet hostname (though it often is).  It does have to be globally unique, and it also ought to serve to identify your system.
+
+If you already own a DNS domain, you could use something under that.  For instance, if you have registered example.com, you might consider news.nncp.example.com.  It is fine if =news.nncp.example.com= doesn't resolve in DNS; it just needs to not be used for something else.
+
+If you don't own a DNS domain, then you may have to make something up, perhaps ending in =.nncp=.  For instance, =news.smith.newark.nj.us.nncp= or something.  Visit with me about this if you like.  The key is that there must be no chance of an accidental use of the same name by some other system anywhere on the planet.
+
+** What newsgroups?
+
+You can opt to carry a "full feed" from quux - that is, basically everything that transits quux will be sent to you.  The concept of "everything" is a little different at each site due to things like spam filters.
+
+Or, you can opt to carry a handful of specific newsgroups -- say, =comp.mail.uucp=.  Or an entire hierarchy; say, =comp.*= or =comp.mail.*=.  These can be changed later, but do require manual config file editing on my part, so be aware that a change doesn't happen instantly.
+
+New newsgroups are often created (or added to quux because a new feed is added which carries them).
+
+You can get a sense of what newsgroups are out there by looking at the ISC's files at ftp://ftp.isc.org/pub/usenet/CONFIG .  The file =active= in that directory contains a list of every newsgroup believed to be active at ISC.  The file =newsgroups= contains descriptions for many, but not all, newsgroups.  Be aware that the actual set of carried newsgroups varies from site to site, particularly for =alt.*= which lacks a formal process for authorizing new groups.
+
+Some newsgroups are /moderated/; that is, you can't post directly to them.  When you attempt to post to a moderated group, INN will actually submit your post via email to the moderator, rather than post it to Usenet.  Therefore, if you intend to post to a moderated group, you will require working email service on your Usenet server.  Moderated newsgroups today are often quite low-traffic and rarely posted to by the public.  You can identify a moderated group because, in the active file from ISC, the line ends with =m= instead of =y=.
+
+* Setting up NNCP
+
+OK, let's begin!  This is the easy part.  First, you need to have done the setup for the [[file:quux-relay.org][quux public relay]], which will have included adding the quux definition to your nncp.hjson.  Then, you need to note the quux news server in your nncp.hjson's neigh section:
+
+#+begin_example
+    news.quux.org: {
+      id: 6QVFU7QIHQNI6TWNRK7OAJUUBDZT262XX3I5YHGZOGLTVYOQM47Q
+      exchpub: DBHZYJFEXNGJ5UFC6TZVYRAAAKKKVLT3DAAXCQXZZYERXPLLEQIQ
+      signpub: OKFURSS5YFXUEEPYCAEGPBIPZDHDBISNJA47LHGMVECH6KC5PEWA
+      noisepub: ZXEYBPZN5WAI4674NBF5ZRX6ZG7YEILVMRDGQT3NWHA7Q5ZMXQXQ
+      via: ["quux"]
+      incoming: "/tmp"  # or more appropriate path; only if you intend to freq active from news.quux.org
+      exec: {
+        rnews: ["/usr/bin/rnews", "-h", "news.quux.org"]
+      }
+    }
+#+end_example
+
+Here you have set up NNCP so that rnews can be executed to process incoming packets from quux.  As a further exercise for added security, you should wrap it with a script that prevents any further arguments to rnews (since NNCP otherwise permits that), but this simple example gets you started.
+
+The last remaining part is to allow the =news= user to queue up packets using =nncp-exec=.  There are two ways you can do that:
+- [[https://nncp.mirrors.quux.org/Administration.html#Shared-spool][NNCP's shared spool]] configuration.  You would need to add the =news= user to the =nncp= group for this one.
+- Or, you can [[file:nncp-sudo.org][configure sudo for NNCP]] to allow the =news= user to effectively run =sudo -u nncp nncp-exec=.
+
+What you do is up to you.  Allowing the news user permissions to NNCP does mean that it could access the NNCP private keys if there was a security breach in the INN process or something, but whether you care about that possibility is up to you.
+
+It is not necessary to run =rnews= as the news user, since it feeds to INN by connecting to localhost:119.
+
+That's it.  You're done configuring NNCP!
+
+* Getting started with INN
 
 * Copyright
 

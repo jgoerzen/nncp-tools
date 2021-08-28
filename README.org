@@ -5,7 +5,7 @@ Here you can find tools and documentation for [[https://nncp.mirrors.quux.org/][
 * Included Documentation
 
 - [[file:docs/quux-relay.org][Using the quux.org public NNCP relay]]
-- [[file:docs/usenet.org][Using NNCP for Usenet]], including how to obtain a full Usenet feed from quux over NNCP
+- [[file:docs/usenet.org][Using NNCP for Usenet]], including how to obtain a full Usenet feed from quux over NNCP [not yet done]
 - [[file:docs/sdf.org][Using NNCP at the SDF Public Access UNIX system]] [not yet ready]
 - [[file:docs/nncp-sudo.org][Using NNCP with sudo]]
 - [[file:docs/tunneling.org][Tunneling NNCP over other transports]]

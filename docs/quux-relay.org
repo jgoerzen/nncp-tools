@@ -185,7 +185,6 @@ https://github.com/jgoerzen/nncp-tools
 
 * Copyright
 
-
 These files are Copyright (c) 2021 John Goerzen.
 
 This program is free software: you can redistribute it and/or modify

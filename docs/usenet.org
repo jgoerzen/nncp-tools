@@ -1,0 +1,41 @@
+#+TITLE: Obtaining Usenet via NNCP
+
+* Introduction to NNCP
+According to the [[https://nncp.mirrors.quux.org/][NNCP documentation]], NNCP is intended to help build up small size ad-hoc friend-to-friend (F2F) statically routed darknet delay-tolerant networks for fire-and-forget secure reliable files, file requests, Internet mail and commands transmission. All packets are integrity checked, end-to-end encrypted, explicitly authenticated by known participants public keys. Onion encryption is applied to relayed packets. Each node acts both as a client and server, can use push and poll behaviour model. Also there is multicasting area support.  NNCP can operate over a lot of transports: Internet, USB sticks, tapes, CD-ROMs, and [[file:tunneling.org][some more]] such as ssh, socat, Dropbox, and so forth.
+
+The NNCP homepage is <http://www.nncpgo.org>.  A mirror using TLS and Let's Encrypt is at <https://nncp.mirrors.quux.org>.
+
+* Introduction to Usenet
+
+[[https://en.wikipedia.org/wiki/Usenet][Usenet]] is sometimes said to be the world's oldest social network.  Since 1980, Usenet has been a massive, global discussion system.  Participants can read and post messages (called articles) in discussion forums (called newsgroups).  Unlike web forums, Usenet newgroups are available from thousands of independently-operated servers worldwide (instead of just one particular site).  You can also use the client of your choice to access them.
+
+Although it is transferred almost exclusively over the Internet using [[https://en.wikipedia.org/wiki/Network_News_Transfer_Protocol][NNTP]] these days, in the early days, Usenet data was exchanged using [[https://en.wikipedia.org/wiki/UUCP][UUCP]], the ancestor technology of NNCP (much as rsh/telnet are ancestors to ssh).
+
+** Suitable for both large & small scales
+
+A Usenet server that is a full participant in the global system can be quite massive.  There are "binaries" newsgroups, in which people post large image or video files.  These are mostly the realm of commercial pay-for servers, and we aren't concerned with them here.  We are talking about discussion groups.  While the overall load for those is <100MB per day, operating a full-fledged Usenet server on the Internet can be heavy in terms of administrative resources, needing to have a 24/7 connection with a static IP that accepts inbound connections, maintaining spam filters, etc.  An NNCP feed is ideal for people that wish to run a smaller server -- perhaps even on a Raspberry Pi or some other very cheap system -- that doesn't have a public IP and may not be permanently connected to the Internet.
+
+Since the tools that operate Usenet come from an era in which even a Raspberry Pi would have been an unimaginablely high level of computing power, the resource requirements for a small site are quite minimal.  You could, for instance, operate a family bulletin board, a discussion group among friends, or even something more unique using various Usenet gateways: for instance, a RSS-to-Usenet interface, etc.  This could all operate on a Raspberry Pi, and nodes could exchange articles via NNCP.  In a closed system like this, NNCP's multicast areas would be perfect, requiring minimal configuration on the Usenet side with maximum flexibility for you.
+
+* Intent of this document
+
+This document is primarily intended to let you operate as a leaf node for news.quux.org, the Usenet transit server operated principally by [[https://www.complete.org/JohnGoerzen][John Goerzen]].  news.quux.org has numerous peers across the globe with which it exchanges Usenet articles, and is able to offer you a full (basically every non-binary newsgroup) or partial (the newsgroups you select) feed.
+
+
+
+* Copyright
+
+These files are Copyright (c) 2021 John Goerzen.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -53,6 +53,8 @@ Because news.quux.org is capable of feeding your Usenet posts to thousands of Us
 
 - Your NNCP data will be exchanged using the [[file:quux-relay.org][quux.org public NNCP relay]].  So, you will need to establish yourself as an NNCP peer with it according to its [[file:quux-relay.org][documentation]].  (This is a quick and simple process.)
 
+- NNCP already set up to call quux, and to run the tosser in some way.
+
 - If you discontinue using the quux NNCP gateway -- and that's fine -- you need to let me know, so we don't build up an endless set of articles for a system that will never talk to us again.
 
 - You must not operate an open or public relay.  Generally, that means "don't expose any ports on your Usenet server to the Internet."
@@ -107,7 +109,9 @@ Some newsgroups are /moderated/; that is, you can't post directly to them.  When
 
 * Setting up NNCP
 
-OK, let's begin!  This is the easy part.  First, you need to have done the setup for the [[file:quux-relay.org][quux public relay]], which will have included adding the quux definition to your nncp.hjson.  Then, you need to note the quux news server in your nncp.hjson's neigh section:
+OK, let's begin!  This is the easy part.  First, you need to have done the setup for the [[file:quux-relay.org][quux public relay]], which will have included adding the quux definition to your nncp.hjson.
+
+Then, you need to note the quux news server in your nncp.hjson's neigh section:
 
 #+begin_example
     news.quux.org: {
@@ -124,6 +128,28 @@ OK, let's begin!  This is the easy part.  First, you need to have done the setup
 #+end_example
 
 Here you have set up NNCP so that rnews can be executed to process incoming packets from quux.  As a further exercise for added security, you should wrap it with a script that prevents any further arguments to rnews (since NNCP otherwise permits that), but this simple example gets you started.
+
+Now, we need a script to act as a plug-in replacement for =uux=.  This is what INN will call to submit the articles you write back to quux.  Put this in =/usr/local/bin/nncp-uux=:
+
+#+begin_src sh
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+while [ -n "$1" ]; do
+    if echo "$1" | grep "!rnews"; then
+        HOST="$(echo "$1" | sed 's/!rnews//')"
+        # This exec will terminate the script here
+        exec nncp-exec -quiet "$HOST" rnews
+    fi
+    shift
+done
+
+echo "Couldn't find valid host"
+exit 5
+#+end_src
+
+And, of course, =chmod a+x /usr/local/bin/nncp-uux=.  INN's =send-uucp= process will cause this thing to be invoked with a bunch of parameters, but most particularly one that's =HOSTNAME!rnews=.  We extract that HOSTNAME as our nncp node name, and form the nncp-exec command from there.
 
 The last remaining part is to allow the =news= user to queue up packets using =nncp-exec=.  There are two ways you can do that:
 - [[https://nncp.mirrors.quux.org/Administration.html#Shared-spool][NNCP's shared spool]] configuration.  You would need to add the =news= user to the =nncp= group for this one.
@@ -142,6 +168,34 @@ For the purposes of easy conversation, this document will cover INN 2.6.4 as dis
 This document is not a substitute for the [[https://www.eyrie.org/~eagle/software/inn/][proper INN documentation]].  In particular, consult the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/install.html][INSTALL]] file, the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/checklist.html][checklist]], and the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/][documentation for each config file and program]].  I am going to highlight some steps, but this is /not/ a comprehensive INN installation document!
 
 First, install INN: =apt-get install inn2 inn2-inews=.  (the inn2-inews package includes rnews)
+
+** newsgroups entry
+
+
+TODO: finish here
+
+
+
+* Advanced topics
+
+** Locking down rnews invocation
+
+NNCP permits the caller to specify parameters to the command lines of executed programs in nncp-exec.  To prevent callers from adding additional parameters to rnews - perhaps maliciously targeting other NNTP servers for instance - you could lock things down.  First, create this at =/usr/local/bin/restricted-rnews=:
+
+#+begin_src sh
+set -euo pipefail
+exec /usr/bin/rnews -h "$1"
+#+end_src
+
+Now, your exec clause in nncp.hjson changes to:
+
+#+begin_example
+      exec: {
+        rnews: ["/usr/local/bin/restricted-rnews", "news.quux.org"]
+      }
+#+end_example
+
+Since any other parameters would be added after the first one -- the hostname you've given -- they will be ignored here.
 
 * Copyright
 

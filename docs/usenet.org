@@ -107,6 +107,10 @@ You can get a sense of what newsgroups are out there by looking at the ISC's fil
 
 Some newsgroups are /moderated/; that is, you can't post directly to them.  When you attempt to post to a moderated group, INN will actually submit your post via email to the moderator, rather than post it to Usenet.  Therefore, if you intend to post to a moderated group, you will require working email service on your Usenet server.  Moderated newsgroups today are often quite low-traffic and rarely posted to by the public.  You can identify a moderated group because, in the active file from ISC, the line ends with =m= instead of =y=.
 
+** Send your request
+
+Send your peering request to me, jgoerzen@complete.org.  If you haven't already, make sure you include your information for the public relay nodelist.  Also include your selected hostname and the names of the newsgroups you want to use.
+
 * Setting up NNCP
 
 OK, let's begin!  This is the easy part.  First, you need to have done the setup for the [[file:quux-relay.org][quux public relay]], which will have included adding the quux definition to your nncp.hjson.
@@ -168,6 +172,14 @@ For the purposes of easy conversation, this document will cover INN 2.6.4 as dis
 This document is not a substitute for the [[https://www.eyrie.org/~eagle/software/inn/][proper INN documentation]].  In particular, consult the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/install.html][INSTALL]] file, the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/checklist.html][checklist]], and the [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/][documentation for each config file and program]].  I am going to highlight some steps, but this is /not/ a comprehensive INN installation document!
 
 First, install INN: =apt-get install inn2 inn2-inews=.  (the inn2-inews package includes rnews)
+
+The INN configuration files live in =/etc/news=.  You'll usually edit them as root, but all other actions should be run as the =news= user, which you can enter with =su -s /bin/bash - news=.
+
+** inn.conf
+
+[[https://www.eyrie.org/~eagle/software/inn/docs-2.6/inn.conf.html][inn.conf]] has some critical settings.  You'll want to set something sensible for organization.  The hostname you've chosen goes in pathhost.
+
+You will probably want to set =innflags: "-C"= to disable processing of cancel messages unless you obtain more advanced processing (which is outside the scope of this document).
 
 * Configuring INN for NNCP
 

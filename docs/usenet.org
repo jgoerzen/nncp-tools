@@ -350,6 +350,16 @@ Now, your exec clause in nncp.hjson changes to:
 
 Since any other parameters would be added after the first one -- the hostname you've given -- they will be ignored here.
 
+* Anticipated FAQs
+
+** What about the NNCP multicast areas feature?
+
+Indeed, NNCP's [[https://nncp.mirrors.quux.org/Multicast.html][multicast areas]] feature is quite appealing.  You might rightly conclude that its algorithm for asynchronous distribution is quite similar to Usenet's, but made more general so it can be used with anything.
+
+It would, in fact, be quite possible to handle distribution via either a multicast area or direct feeds from INN like this document discusses.  I opted for direct feeds for two reasons:
+
+- At the moment, when dealing with NNCP multicast areas, the rnews wrapper has no way to know which particular member node transmitted an exec request, reducing the usefulness of our security and logging practices.
+- While both approaches have ways to prevent duplicate re-injection and routing loops, it is best in this case to use INN's, so that a situation in which an article may post to Usenet via NNCP, traverse Usenet using NNTP, then return back to NNCP could be detected in this way.
 * Copyright
 
 These files are Copyright (c) 2021 John Goerzen.

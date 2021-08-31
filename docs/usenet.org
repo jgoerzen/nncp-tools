@@ -144,7 +144,7 @@ while [ -n "$1" ]; do
     if echo "$1" | grep -q "!rnews"; then
         HOST="$(echo "$1" | sed 's/!rnews//')"
         # This exec will terminate the script here
-        exec nncp-exec -quiet "$HOST" rnews
+        exec /usr/local/bin/nncp-exec -quiet "$HOST" rnews
     fi
     shift
 done
@@ -153,7 +153,7 @@ echo "Couldn't find valid host"
 exit 5
 #+end_src
 
-And, of course, =chmod a+x /usr/local/bin/nncp-uux=.  INN's =send-uucp= process will cause this thing to be invoked with a bunch of parameters, but most particularly one that's =HOSTNAME!rnews=.  We extract that HOSTNAME as our nncp node name, and form the nncp-exec command from there.
+And, of course, =chmod a+x /usr/local/bin/nncp-uux= and, if your nncp-exec isn't in =/usr/local/bin=, fix that path.  INN's =send-uucp= process will cause this thing to be invoked with a bunch of parameters, but most particularly one that's =HOSTNAME!rnews=.  We extract that HOSTNAME as our nncp node name, and form the nncp-exec command from there.
 
 The last remaining part is to allow the =news= user to queue up packets using =nncp-exec=.  There are three ways you can do that:
 - [[https://nncp.mirrors.quux.org/Administration.html#Shared-spool][NNCP's shared spool]] configuration.  You would need to add the =news= user to the =nncp= group for this one.  On Debian, =adduser news nncp= can do this.
@@ -188,6 +188,8 @@ Depending on your circumstances, you may wish to set =addinjectionpostinghost= t
 
 You should put your valid e-mail address for =complaints=, which is part of the =Injection-Info= header.
 
+Many sites will also need to set =domain:= to be your hostname (without qualification).
+
 ** expire.ctl
 
 [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/expire.ctl.html][expire.ctl]] defines how long old articles are kept around.  By default, they're generally kept for 15 days.  See the comments in this file if you want to keep them for a longer or shorter time.  It is not necessary to modify this file.
@@ -201,6 +203,42 @@ ME/my.pathhost.value.goes.here:!*/!local,!collabra-internal::
 #+end_example
 
 We will do some more work in this file later.
+* Creating newsgroups
+
+Now that you have done the basics, it's time to create some newsgroups.  How you will do that will depend on whether you are grabbing a few newsgroups or thousands.
+
+** A small feed with a few newsgroups
+
+In this scenario, you can manually create each relevant newsgroup.  Say you wanted to add =comp.misc.fakegroup=, as unmoderated.  You would run:
+
+=/usr/lib/news/bin/ctlinnd newgroup comp.misc.fakegroup y=
+
+If it was moderated, you'd use =m= instead of =y=.  That's it.  You're done.
+
+** A large feed with tons of newsgroups
+
+In this case, you will need to use some automated mechanism to create your local newsgroups.  First, request =active= from news.quux.org:
+
+#+begin_example
+nncp-freq news.quux.org:active
+#+end_example
+
+Once that file is delivered, you can use actsync to process it.
+
+*** Setting up actsync.ign
+
+Edit actsync.ign.  By default, it's set up to just bring in the 8 "major" news hierarchies.  That's probably reasonable to start.  If you want to just take everything quux has, add =c *= after the example lines.  Then run:
+
+#+begin_example
+/usr/lib/news/bin/actsync -p 0 -v 2 -i /etc/news/actsync.ign localhost \
+  /var/local/nncp-incoming/news.quux.org/active > /tmp/foo2
+#+end_example
+
+This =nncp-incoming= path is the location where the active file you freq'd appears (don't forget to chown it to news before you run this command, if needed).  Now, inspect /tmp/foo2.  You might make sure there are no unexpected =rmgroup= commands (which would remove groups).  If you're satisfied, then run:
+
+#+begin_example
+/usr/lib/news/bin/mod-active /tmp/foo
+#+end_example
 
 * Configuring INN for NNCP
 
@@ -261,8 +299,6 @@ Now you can set up cron for send-uucp.  Something like this in /etc/cron.d/local
 PATH=/usr/lib/news/bin:/sbin:/bin:/usr/sbin:/usr/bin
 20,50 * * * *   news    /usr/lib/news/bin/send-uucp
 #+end_example
-
-
 
 * Advanced topics
 

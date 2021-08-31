@@ -233,10 +233,10 @@ Edit actsync.ign.  By default, it's set up to just bring in the 8 "major" news h
 
 #+begin_example
 /usr/lib/news/bin/actsync -p 0 -v 2 -i /etc/news/actsync.ign localhost \
-  /var/local/nncp-incoming/news.quux.org/active > /tmp/foo2
+  /var/local/nncp-incoming/news.quux.org/active > /tmp/foo
 #+end_example
 
-This =nncp-incoming= path is the location where the active file you freq'd appears (don't forget to chown it to news before you run this command, if needed).  Now, inspect /tmp/foo2.  You might make sure there are no unexpected =rmgroup= commands (which would remove groups).  If you're satisfied, then run:
+This =nncp-incoming= path is the location where the active file you freq'd appears (don't forget to chown it to news before you run this command, if needed).  Now, inspect /tmp/foo.  You might make sure there are no unexpected =rmgroup= commands (which would remove groups).  If you're satisfied, then run:
 
 #+begin_example
 /usr/lib/news/bin/mod-active /tmp/foo

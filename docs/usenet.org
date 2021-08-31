@@ -190,7 +190,7 @@ Depending on your circumstances, you may wish to set =addinjectionpostinghost= t
 
 You should put your valid e-mail address for =complaints=, which is part of the =Injection-Info= header.
 
-Many sites will also need to set =domain:= to be your hostname (without qualification).
+Many sites will also need to set =domain:= to be the domain part of your pathhost.  That is, if your pathhost is "foo.bar.baz.example.com", then domain is "bar.baz.example.com".
 
 ** expire.ctl
 

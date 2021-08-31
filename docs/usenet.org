@@ -155,13 +155,16 @@ exit 5
 
 And, of course, =chmod a+x /usr/local/bin/nncp-uux=.  INN's =send-uucp= process will cause this thing to be invoked with a bunch of parameters, but most particularly one that's =HOSTNAME!rnews=.  We extract that HOSTNAME as our nncp node name, and form the nncp-exec command from there.
 
-The last remaining part is to allow the =news= user to queue up packets using =nncp-exec=.  There are two ways you can do that:
-- [[https://nncp.mirrors.quux.org/Administration.html#Shared-spool][NNCP's shared spool]] configuration.  You would need to add the =news= user to the =nncp= group for this one.
+The last remaining part is to allow the =news= user to queue up packets using =nncp-exec=.  There are three ways you can do that:
+- [[https://nncp.mirrors.quux.org/Administration.html#Shared-spool][NNCP's shared spool]] configuration.  You would need to add the =news= user to the =nncp= group for this one.  On Debian, =adduser news nncp= can do this.
 - Or, you can [[file:nncp-sudo.org][configure sudo for NNCP]] to allow the =news= user to effectively run =sudo -u nncp nncp-exec=.
+- Simply run NNCP as the news user instead of a different user such as nncp.
+
+There is a similar part to allow NNCP to run rnews; you need to add nncp to the uucp group; =adduser nncp uucp= will do the trick on Debian.
 
 What you do is up to you.  Allowing the news user permissions to NNCP does mean that it could access the NNCP private keys if there was a security breach in the INN process or something, but whether you care about that possibility is up to you.
 
-It is not necessary to run =rnews= as the news user, since it feeds to INN by connecting to localhost:119.
+It is not necessary to run =rnews= as the news user, since it feeds to INN by connecting to localhost:119.  But, by default it is only executable by the news user or uucp group, which is why we need NNCP to be running as either that user or that group.
 
 That's it.  You're done configuring NNCP!
 
@@ -180,6 +183,24 @@ The INN configuration files live in =/etc/news=.  You'll usually edit them as ro
 [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/inn.conf.html][inn.conf]] has some critical settings.  You'll want to set something sensible for organization.  The hostname you've chosen goes in pathhost.
 
 You will probably want to set =innflags: "-C"= to disable processing of cancel messages unless you obtain more advanced processing (which is outside the scope of this document).
+
+Depending on your circumstances, you may wish to set =addinjectionpostinghost= to false for privacy reasons.
+
+You should put your valid e-mail address for =complaints=, which is part of the =Injection-Info= header.
+
+** expire.ctl
+
+[[https://www.eyrie.org/~eagle/software/inn/docs-2.6/expire.ctl.html][expire.ctl]] defines how long old articles are kept around.  By default, they're generally kept for 15 days.  See the comments in this file if you want to keep them for a longer or shorter time.  It is not necessary to modify this file.
+
+** newsfeeds
+
+In [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/newsfeeds.html][newsfeeds]], you need to edit the "ME" line to exclude your own hostname (pathhost).  Add =/PATHHOST= after "ME", so it reads like this:
+
+#+begin_example
+ME/my.pathhost.value.goes.here:!*/!local,!collabra-internal::
+#+end_example
+
+We will do some more work in this file later.
 
 * Configuring INN for NNCP
 
@@ -210,6 +231,8 @@ Here's a *very important note*: make sure there isn't a space at the end of that
 
 If you are taking only a subset of newsgroups, you will want to modify this accordingly to send only the desired messages to quux.
 
+Also, remember to modify the "ME" line as described above.
+
 ** innshellvars.pl.local
 
 Next, we're going to tell INN to use our fake uux instead of UUCP's.  Add this to innshellvars.pl.local:
@@ -238,12 +261,6 @@ Now you can set up cron for send-uucp.  Something like this in /etc/cron.d/local
 PATH=/usr/lib/news/bin:/sbin:/bin:/usr/sbin:/usr/bin
 20,50 * * * *   news    /usr/lib/news/bin/send-uucp
 #+end_example
-
-
-** newsfeeds entry
-
-
-TODO: finish here
 
 
 

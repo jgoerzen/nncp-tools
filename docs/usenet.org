@@ -302,6 +302,35 @@ PATH=/usr/lib/news/bin:/sbin:/bin:/usr/sbin:/usr/bin
 20,50 * * * *   news    /usr/lib/news/bin/send-uucp
 #+end_example
 
+** Submitting to the Usenet Top 1000 project (optional)
+
+The [[http://top1000.anthologeek.net/][Usenet Top 1000]] project tracks the top 1000 Usenet servers on the Internet.  It does this by receiving automated reports from participating administrators of the articles that pass through their site - and, critically, information about the Path header in each article that indicates where in the globe it traversed.
+
+Your participation helps in several ways:
+
+- Helps me understand how important, or not, this service is
+- Helps the Usenet community understand traffic flow patterns
+- Is a way of sort of "casting a vote" for certain helpful peers.
+
+Once INN is set up and working, the only requirement for participation is a working email system.  Reports are (these days) sent out daily.
+
+To enable, first edit =newsfeeds= and add this line:
+
+#+begin_example
+inpaths!:*:Tc,WP:/usr/lib/news/bin/ginpaths2
+#+end_example
+
+Don't forget to restart INN or issue =ctlinnd reload newsfeeds reason=.
+
+Now, edit =/etc/cron.d/inn2= and find the "NINPATHS" section at the bottom.  Uncomment the two lines, and in the second line, change =1 * *= to =* * *= (that line dates from a time when people made monthly instead of daily reports).  The lines should now read:
+
+#+begin_example
+6 6	* * *	news	ctlinnd -s -t 60 flush inpaths!
+8 6	* * *	news	sendinpaths
+#+end_example
+
+That's it.  Done!
+
 * Supporting newsreaders (client applications)
 
 By now, you should have your system fully armed and operational!  It should be able to send and receive news.  Except... you have no way to read it.  So let's do that.
@@ -360,6 +389,23 @@ It would, in fact, be quite possible to handle distribution via either a multica
 
 - At the moment, when dealing with NNCP multicast areas, the rnews wrapper has no way to know which particular member node transmitted an exec request, reducing the usefulness of our security and logging practices.
 - While both approaches have ways to prevent duplicate re-injection and routing loops, it is best in this case to use INN's, so that a situation in which an article may post to Usenet via NNCP, traverse Usenet using NNTP, then return back to NNCP could be detected in this way.
+
+** I already have a full Usenet feed.  Can I still peer with you using NNCP?
+
+This is unlikely to be a great idea, because it would mostly be two systems sending each other articles that the other has already seen.  I'm willing to explore, but would probably prefer to peer with you over NNTP.
+
+** How often does quux process NNCP packets?
+
+This information is subject to change.
+
+At the moment, I am trying to strike a balance between quick turnaround, and not giving those that process news daily thousands of tiny packets to process.  Right now:
+
+- news.quux.org calls quux public relay to exchange packets at :25 and :55.  This will cause inbound packets to be processed.
+- NNCP outgoing batches are generated at :30 and :00.
+- news.quux.org calls quux again ast :35 and :05 to transmit those outgoing batches.
+
+For most, calling the quux public relay at :20 and :50 would be the most expeditious way to get your local posts out.
+
 * Copyright
 
 These files are Copyright (c) 2021 John Goerzen.

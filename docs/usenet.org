@@ -178,6 +178,8 @@ First, install INN: =apt-get install inn2 inn2-inews=.  (the inn2-inews package 
 
 The INN configuration files live in =/etc/news=.  You'll usually edit them as root, but all other actions should be run as the =news= user, which you can enter with =su -s /bin/bash - news=.
 
+Although you can reload certain INN config files via =ctlinnd=, the easiest way to make changes take effect is with =systemctl restart inn2=.
+
 ** inn.conf
 
 [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/inn.conf.html][inn.conf]] has some critical settings.  You'll want to set something sensible for organization.  The hostname you've chosen goes in pathhost.
@@ -299,6 +301,33 @@ Now you can set up cron for send-uucp.  Something like this in /etc/cron.d/local
 PATH=/usr/lib/news/bin:/sbin:/bin:/usr/sbin:/usr/bin
 20,50 * * * *   news    /usr/lib/news/bin/send-uucp
 #+end_example
+
+* Supporting newsreaders (client applications)
+
+By now, you should have your system fully armed and operational!  It should be able to send and receive news.  Except... you have no way to read it.  So let's do that.
+
+The file you will be interested in is [[https://www.eyrie.org/~eagle/software/inn/docs-2.6/readers.conf.html][readers.conf]].  By default, it will let you connect from localhost.  So, that may be enough for you!  You could install a reader like slrn over there and just ssh into your newsbox and read news there.
+
+But let's say you want to permit access from your LAN.  Then you need to support passwords.  Add this after the =auth "localhost"= block:
+
+#+begin_example
+auth "authenticated" {
+    hosts: "192.168.0.0/16"
+    auth: "/usr/lib/news/bin/auth/passwd/ckpasswd -f /var/lib/news/newsusers"
+}
+
+access "authenticated" {
+    newsgroups: "*"
+}
+#+end_example
+
+Of course, use the relevant netmask there.
+
+Now you need to create the =/var/lib/news/newsusers= file.  On Debian, you will need to =apt-get install apache2-utils= to do this.
+
+Now, =su -s /bin/bash - news= and run =htpasswd -c -d /var/lib/news/newsusers username=.  You can add more users also; just leave off the =-c= (since it means "create").
+
+If you're going to use this on the public Internet -- and I recommend you do *NOT* - but if you must, then you will certainly want to arrange to run a nnrpd with SSL and add =require_ssl: true= to the auth group.
 
 * Advanced topics
 

@@ -400,9 +400,8 @@ This information is subject to change.
 
 At the moment, I am trying to strike a balance between quick turnaround, and not giving those that process news daily thousands of tiny packets to process.  Right now:
 
-- news.quux.org calls quux public relay to exchange packets at :25 and :55.  This will cause inbound packets to be processed.
+- news.quux.org calls quux public relay to exchange packets every 5 minutes.
 - NNCP outgoing batches are generated at :30 and :00.
-- news.quux.org calls quux again ast :35 and :05 to transmit those outgoing batches.
 
 For most, calling the quux public relay at :20 and :50 would be the most expeditious way to get your local posts out.
 

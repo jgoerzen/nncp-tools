@@ -10,6 +10,10 @@ Here you can find tools and documentation for [[https://nncp.mirrors.quux.org/][
 - [[file:docs/nncp-sudo.org][Using NNCP with sudo]]
 - [[file:docs/tunneling.org][Tunneling NNCP over other transports]]
 
+** Related Documentation
+
+- [[https://github.com/jgoerzen/gitsync-nncp/blob/main/gitsync-nncp.org][Syncing Git Repositories over NNCP]] with [[https://github.com/jgoerzen/gitsync-nncp][gitsync-nncp]]
+
 * Copyright
 
 These files are Copyright (c) 2021 John Goerzen.
